@@ -64,23 +64,36 @@ public class ChatServer implements TCPConnectionListener {
      */
 
 
-    @Override
+    @Override// когда Connection готов, то добавляем его в список соединений
     public synchronized void onConnectionReady(TCPConnection tcpConnection) {
-
+        connections.add(tcpConnection);
+        // если клиент подключился, то всех оповещаем
+        sendToAllConnections("Client connected: " + tcpConnection);
     }
 
-    @Override
+    @Override// если приняли строчку - нужно разослать всем клиентам
     public  synchronized void onReceiveString(TCPConnection tcpConnection, String value) {
-
+        // отправляем всем принятую строчку
+        sendToAllConnections(value);
     }
 
-    @Override
+    @Override// если Connection отвалился, то удаляем его из списка соединений
     public  synchronized void onDisconnect(TCPConnection tcpConnection) {
-
+        connections.remove(tcpConnection);
+        sendToAllConnections("Client connected: " + tcpConnection);
     }
 
-    @Override
+    @Override// если исключение пишем в консоль
     public synchronized void onException(TCPConnection tcpConnection, Exception e) {
+        System.out.println("TCPConnection exception: " + e);
+    }
 
+    // метод, который рассылает всем сообщения (кто подключился, кто отключился)
+    private void sendToAllConnections(String value){
+        // логируем строчку в консоль, которую отправляем
+        System.out.println(value);
+        // проходим по всему списку соединений и отправляем сообщение
+        final int cnt = connections.size();// получаем размер списка в переменную, чтобы не вызывался каждый раз метод size()(оптимизация)
+        for (int i = 0; i < connections.size(); i++) connections.get(i).sendString(value);
     }
 }
