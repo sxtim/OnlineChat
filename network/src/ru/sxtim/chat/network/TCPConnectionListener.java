@@ -1,6 +1,9 @@
 package ru.sxtim.chat.network;
 
-/** Описываем события TCPConnection
+/** Слой абстракции для того чтобы TCPConnection использовать в разных частях кода
+ *  и по разному реагировать на события;
+ *  В ClientWindow и ServerChat реализуем эти абстракции;
+ * Описываем события TCPConnection:
  *
  */
 public interface TCPConnectionListener {

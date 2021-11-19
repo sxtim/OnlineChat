@@ -34,19 +34,18 @@ public class TCPConnection {
      * Для этого в java применяется особый вид абстракции - Интерфейсы;
      * Придумаем событийную систему и опишем в интерфейсе TCPConnectionListener
      */
-
+    // ПЕРВЫЙ КОНСТРУКТОР рассчитан на то, сокет уже создан, что кто-то снаружи сделает соединение
     // принимает на вход готовый объект сокета
     // и создает с этим сокетом соединение
-    // передаем экземпляр слушателя событий
-    public TCPConnection(Socket socket, TCPConnectionListener eventListener) throws IOException {
+    // принимает на вход экземпляр слушателя событий
+    public TCPConnection( TCPConnectionListener eventListener, Socket socket ) throws IOException {
 /**запоминаем сокет и слушателя событий в поля*/
         this.eventListener = eventListener;
         this.socket = socket;
 /** далее у этого сокета получаем входящий и исходящий поток  socket.getInputStream();
 *чтобы принимать какие-то байты и писать какие-то байты     socket.getInputStream();
-*/
-        // на основе простого потока getInputStream создаем более сложный InputStream
-        // и оборачиваем в экземпляр класса BufferedReader, который умеет читать строчки
+*/        // на основе простого потока getInputStream создаем более сложный InputStream
+        // и оборачиваем в экземпляр класса BufferedReader, который умеет читать строчки.
         // можно напрямую указать кодировку с которой работаем
         in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
@@ -72,17 +71,27 @@ public class TCPConnection {
 
 
                 } catch(IOException e){
-
+                    eventListener.onException(TCPConnection.this, e);
                 }
-                // если случилась какая то ошибка в любом случае закрываем сокет
+                // если случилась какая-то ошибка в любом случае закрываем сокет
+                // передаем дисконнект
                 finally {
-
+                    eventListener.onDisconnect(TCPConnection.this);
                 }
             }
         });
         // запускаем поток
         rxThread.start();
     }
+    // ВТОРОЙ КОНСТРУКТОР создает сокет. Рассчитан на то что сокет будет создаваться внутри
+    // передаем ipAddr, port
+    public TCPConnection(TCPConnectionListener eventListener, String ipAddr, int port ) throws IOException{
+        //вызываем ПЕРВЫЙ конструктор
+        // передаем сокет на основании ipAddr, и порта
+        this(eventListener, new Socket(ipAddr, port));
+
+    }
+
     // =======Functions=======
 
     /**
@@ -93,8 +102,12 @@ public class TCPConnection {
     // отправить сообщение (спрашивает строчку которую мыы хотим отправить)
     public synchronized void sendString(String value){
         try {
-            // пишем в поток вывода
-            out.write(value);
+            // Пишем в поток вывода.
+            // Добавляем символы конца строки - возврат каретки и перевод строки,
+            // для того чтоб понять, где конец строки
+            out.write(value + "\r \n");
+            // сбрасывает все буферы и отправляет
+            out.flush();
         } catch (IOException e) {
             eventListener.onException(TCPConnection.this, e);
             // так как случилось исключение мы разрываем поток
@@ -113,6 +126,13 @@ public class TCPConnection {
             // передаем Евентлистенеру обработку исключения
             eventListener.onException(TCPConnection.this, e);
         }
+    }
+
+    // овверайдим toString, чтобы видеть кто подключился/отключился (стандартная реализация полиморфизма)
+    @Override
+    public String toString (){
+        // адрес с которого установлено соединение и номер порта
+        return "TCPConnection: " + socket.getInetAddress() + ": " + socket.getPort();
     }
 
 
