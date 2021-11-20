@@ -56,7 +56,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
         try {
             connection = new TCPConnection(this, IP_ADDR, PORT);
         } catch (IOException e) {
-            e.printStackTrace();
+            printMsg("Connection Exception: " + e);
         }
 
         setVisible(true);
@@ -70,11 +70,15 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     private synchronized void printMsg(String msg){
         // так как работать будет из разных потоков
         // в методе invokeLater() создаем экземпляр анонимного класса и реализуем метод runnable()
+        // выполняем в потоке окна
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 // добавляем строчку которая к нам прилетела
                 chatLog.append(msg + "\n");
+                // для автоматического автоскролла устанавливаем каретку в самый конец документа
+                chatLog.setCaretPosition(chatLog.getDocument().getLength());
+
             }
         });
     }
@@ -83,28 +87,39 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
      * Так как соединение будет одно, синхронизировать методы нет смысла
      *
      */
+
+    // при нажатии кнопку получаем строчку у поля getText()
     @Override
     public void actionPerformed(ActionEvent e) {
+        String msg = fieldInputMsg.getText();
+        // проверка отправки пустой строчки
+        if(msg.equals("")) return;
+        // если строчка не пустая, то стираем то, что находится в поле fieldsInputMsg
+        fieldInputMsg.setText(null);
+        //  в соединение передаем строчку
+        connection.sendString(fieldNickName.getText() + ": " + msg);
 
     }
 
     @Override
     public void onConnectionReady(TCPConnection tcpConnection) {
-
+        // printMsg() используется из потока TCPConnection
+        printMsg("Connection ready...");
     }
 
     @Override
     public void onReceiveString(TCPConnection tcpConnection, String value) {
-
+        // когда приняли строчкеу - печатаем
+        printMsg(value);
     }
 
     @Override
     public void onDisconnect(TCPConnection tcpConnection) {
-
+            printMsg("Connection close");
     }
 
     @Override
     public void onException(TCPConnection tcpConnection, Exception e) {
-
+        printMsg("Connection Exception: " + e);
     }
 }
