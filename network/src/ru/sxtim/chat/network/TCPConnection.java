@@ -67,6 +67,7 @@ public class TCPConnection {
                         String msg = in.readLine();
                         //  и отдаем ее eventListener (передаем туда объект соединения и строчку)
                         eventListener.onReceiveString(TCPConnection.this, msg);
+                        System.out.println("iSInterrupted");
                     }
 
 
@@ -102,6 +103,8 @@ public class TCPConnection {
     // отправить сообщение (спрашивает строчку которую мыы хотим отправить)
     public synchronized void sendString(String value){
         try {
+
+//            System.out.println("SENDSTRING");
             // Пишем в поток вывода.
             // Добавляем символы конца строки - возврат каретки и перевод строки,
             // для того чтоб понять, где конец строки
@@ -118,7 +121,7 @@ public class TCPConnection {
     // оборвать соединение (чтобы снаружи порвать соединение в любой момент)
     public synchronized void  disconnect (){
         // прерываем поток
-        rxThread.isInterrupted();
+        rxThread.interrupt();
         // закрываем поток
         try {
             socket.close();

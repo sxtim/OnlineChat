@@ -94,6 +94,6 @@ public class ChatServer implements TCPConnectionListener {
         System.out.println(value);
         // проходим по всему списку соединений и отправляем сообщение
         final int cnt = connections.size();// получаем размер списка в переменную, чтобы не вызывался каждый раз метод size()(оптимизация)
-        for (int i = 0; i < connections.size(); i++) connections.get(i).sendString(value);
+        for (int i = 0; i < cnt; i++) connections.get(i).sendString(value);
     }
 }

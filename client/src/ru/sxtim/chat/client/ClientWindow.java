@@ -1,5 +1,6 @@
 package ru.sxtim.chat.client;
 
+import org.w3c.dom.ls.LSOutput;
 import ru.sxtim.chat.network.TCPConnection;
 import ru.sxtim.chat.network.TCPConnectionListener;
 
@@ -45,6 +46,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         setLocationRelativeTo(null);
+        setAlwaysOnTop(true);
         chatLog.setEditable(false);//запрет редактирования
         chatLog.setLineWrap(true);// перенос слов
         add(chatLog, BorderLayout.CENTER);
@@ -77,7 +79,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
                 // добавляем строчку которая к нам прилетела
                 chatLog.append(msg + "\n");
                 // для автоматического автоскролла устанавливаем каретку в самый конец документа
-                chatLog.setCaretPosition(chatLog.getDocument().getLength());
+//                chatLog.setCaretPosition(chatLog.getDocument().getLength());
 
             }
         });
@@ -110,6 +112,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     @Override
     public void onReceiveString(TCPConnection tcpConnection, String value) {
         // когда приняли строчкеу - печатаем
+//        System.out.println("oNRECEIVE");
         printMsg(value);
     }
 
