@@ -5,6 +5,7 @@ import ru.sxtim.chat.network.TCPConnection;
 import ru.sxtim.chat.network.TCPConnectionListener;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,28 +33,36 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     private static final String IP_ADDR = "127.0.0.1";
     private static final int PORT = 8189;
     private static final int WIDTH = 600;
-    private static final int HEIGHT = 400;
+    private static final int HEIGHT = 150;
     private TCPConnection connection;
 
+    // фрейм
+    JFrame frame;
+    // скролл панель
+    JScrollPane scroll;
     // поле для сообщений
     private final JTextArea chatLog = new JTextArea();
+    // поле никнейм
     private final JTextField fieldNickName = new JTextField("BOB");
-    private final JTextField fieldInputMsg = new JTextField();
+    // поле сообщения
+    private final JTextField fieldInputMsg = new JTextField("Message: ");
 
     // Constructors
 
     private ClientWindow() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(WIDTH, HEIGHT);
-        setLocationRelativeTo(null);
-        setAlwaysOnTop(true);
+        frame = new JFrame ("CHAT");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setLocationRelativeTo(null);
+        frame.setAlwaysOnTop(true);
         chatLog.setEditable(false);//запрет редактирования
         chatLog.setLineWrap(true);// перенос слов
-        add(chatLog, BorderLayout.CENTER);
-        add(fieldNickName, BorderLayout.NORTH);
+        scroll = new JScrollPane (chatLog);
+        frame.add(fieldNickName, BorderLayout.NORTH);
         //добавляем себя, чтобы перехватывать нажатия Enter
         fieldInputMsg.addActionListener(this);
-        add(fieldInputMsg, BorderLayout.SOUTH);
+        frame.add(fieldInputMsg, BorderLayout.SOUTH);
+
 
         try {
             connection = new TCPConnection(this, IP_ADDR, PORT);
@@ -61,7 +70,9 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
             printMsg("Connection Exception: " + e);
         }
 
-        setVisible(true);
+
+        frame.add(scroll);
+        frame.setVisible(true);
 
 
 
@@ -79,7 +90,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
                 // добавляем строчку которая к нам прилетела
                 chatLog.append(msg + "\n");
                 // для автоматического автоскролла устанавливаем каретку в самый конец документа
-//                chatLog.setCaretPosition(chatLog.getDocument().getLength());
+                chatLog.setCaretPosition(chatLog.getText().length());
 
             }
         });
