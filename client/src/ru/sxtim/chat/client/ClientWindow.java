@@ -29,7 +29,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
 
     }
 
-    //Fields
+    //========Fields============
     private static final String IP_ADDR = "127.0.0.1";
     private static final int PORT = 8189;
     private static final int WIDTH = 600;
@@ -37,9 +37,9 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     private TCPConnection connection;
 
     // фрейм
-    JFrame frame;
+    private static final JFrame frame = new JFrame("CHAT");
     // скролл панель
-    JScrollPane scroll;
+    private static JScrollPane scroll;
     // поле для сообщений
     private final JTextArea chatLog = new JTextArea();
     // поле никнейм
@@ -50,7 +50,6 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     // Constructors
 
     private ClientWindow() {
-        frame = new JFrame ("CHAT");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setLocationRelativeTo(null);

@@ -44,9 +44,9 @@ public class TCPConnection {
         this.socket = socket;
 /** далее у этого сокета получаем входящий и исходящий поток  socket.getInputStream();
 *чтобы принимать какие-то байты и писать какие-то байты     socket.getInputStream();
-*/        // на основе простого потока getInputStream создаем более сложный InputStream
+*/        // На основе простого потока getInputStream создаем более сложный InputStream
         // и оборачиваем в экземпляр класса BufferedReader, который умеет читать строчки.
-        // можно напрямую указать кодировку с которой работаем
+        // Можно напрямую указать кодировку с которой работаем
         in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
         /**Поток должен что-то выполнять, для того чтобы он что-то выполнял - один из вариантов
@@ -104,7 +104,7 @@ public class TCPConnection {
     public synchronized void sendString(String value){
         try {
 
-//            System.out.println("SENDSTRING");
+
             // Пишем в поток вывода.
             // Добавляем символы конца строки - возврат каретки и перевод строки,
             // для того чтоб понять, где конец строки
