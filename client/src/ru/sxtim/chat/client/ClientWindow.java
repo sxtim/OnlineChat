@@ -30,6 +30,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     }
 
     //========Fields============
+    private int userName;
     private static final String IP_ADDR = "127.0.0.1";
     private static final int PORT = 8189;
     private static final int WIDTH = 600;
@@ -122,7 +123,7 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     @Override
     public void onReceiveString(TCPConnection tcpConnection, String value) {
         // когда приняли строчкеу - печатаем
-//        System.out.println("oNRECEIVE");
+
         printMsg(value);
     }
 
